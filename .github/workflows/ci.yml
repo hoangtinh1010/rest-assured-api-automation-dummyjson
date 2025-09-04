@@ -1,0 +1,71 @@
+name: API Automation CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup JDK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Cache Maven dependencies để chạy nhanh hơn
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Run tests (dùng --fail-at-end để chạy hết test mới fail)
+      - name: Run tests with Maven
+        run: mvn -B clean test --fail-at-end
+
+      # Upload Surefire report (JUnit/TestNG log)
+      - name: Upload Surefire reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+
+      # Upload Allure results (raw)
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results
+
+      # Generate Allure HTML report
+      - name: Generate Allure Report
+        run: |
+          mkdir -p target/allure-report
+          npx allure-commandline generate target/allure-results -o target/allure-report --clean
+
+      # Upload Allure HTML report (artifact)
+      - name: Upload Allure HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-html-report
+          path: target/allure-report
+
+      # Deploy Allure HTML report to GitHub Pages
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/allure-report
+          publish_branch: gh-pages
