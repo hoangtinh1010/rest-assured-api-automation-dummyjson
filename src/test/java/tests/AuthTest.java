@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import static endpoints.AuthApi.*;
 import static org.testng.Assert.assertEquals;
 
-import providers.LoginDataProviderJson;
+import providers.LoginDataProvider;
 
 public class AuthTest extends BaseTest {
     private static String authToken;
@@ -33,7 +33,7 @@ public class AuthTest extends BaseTest {
         refreshToken = response.jsonPath().getString("refreshToken");
     }
 
-    @Test(dataProvider = "loginDataJson", dataProviderClass = LoginDataProviderJson.class)
+    @Test(dataProvider = "loginDataJson", dataProviderClass = LoginDataProvider.class)
     @Severity(SeverityLevel.CRITICAL)
     public void testUserLogin_InValid(String username, String password, int expectedStatusCode) {
         Response response = login(username,password);

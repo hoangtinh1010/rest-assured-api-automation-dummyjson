@@ -9,12 +9,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-public class LoginDataProviderJson {
+public class LoginDataProvider {
     @DataProvider(name = "loginDataJson")
     public static Object[][] userDataFromJson() throws IOException {
         //Load file JSON
         // This file should contain an array of user objects with "name", "job", and "expectedStatusCode" fields
-        InputStream inputStream = LoginDataProviderJson.class.getClassLoader().getResourceAsStream("data/InvalidLoginData.json");
+        InputStream inputStream = LoginDataProvider.class.getClassLoader().getResourceAsStream("data/InvalidLoginData.json");
 
         if (inputStream == null) {
             throw new IOException(" Không tìm thấy file: data/InvalidLoginData.json. Kiểm tra lại đường dẫn file trong thư mục resources.");
