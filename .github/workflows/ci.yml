@@ -51,6 +51,7 @@ jobs:
 
       # Generate Allure HTML report
       - name: Generate Allure Report
+        if: always()
         run: |
           mkdir -p target/allure-report
           npx allure-commandline generate target/allure-results -o target/allure-report --clean
